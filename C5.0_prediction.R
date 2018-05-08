@@ -8,15 +8,15 @@ loadDataset <- function(filename) {
   dataset[, "class"] <<- as.factor(dataset[, "class"])
 }
 
-fit_tree_model <- function(control_param) {
+fitTreeModelBoosted <- function(control_param) {
   tree_model <- C5.0(class~., data=dataset, trials=10)
 }
 
-fit_tree_model_boosted <- function(trials_count) {
-  tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
+fitTreeModel <- function(control_param) {
+  tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control=control_param)
 }
 
-summarize_tree <- function(tree_model) {
+summarizeTree <- function(tree_model) {
   plot(tree_model)
   summary(tree_model)
 }
@@ -44,18 +44,15 @@ splitData <- function(data, folds_count, stratified, shuffled) {
     }
     folds
   } else {
-    folds = split(data, rep(1:folds_number))
+    folds = split(data, rep(1:folds_count))
   }
 }
 
 data_folds = splitData(dataset, folds_n=5, stratified=TRUE, shuffled=TRUE)
 
-tree_model <- fit_tree_model(tree_control)
-boosted_tree_model <- fit_tree_model_boosted()
+tree_model <- fitTreeModel(tree_control)
+boosted_tree_model <- fitTreeModelBoosted()
 
-
-folds <- createFolds(iris$Species, k = 10, list = FALSE)
-folds
 
 model <- C5.0(Species~., data=iris[1:120,], trials=10)
 # summarize the fit
