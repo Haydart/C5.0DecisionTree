@@ -8,9 +8,19 @@ loadDataset <- function(filename) {
   dataset[, "class"] <<- as.factor(dataset[, "class"])
 }
 
-plotExampleTree <- function(control_param) {
-  example_dec_tree = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
-  plot(example_dec_tree)
+plotDecisionTree <- function(control_param) {
+  tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
+  plot(tree_model)
+  tree_model
+}
+
+fit_tree_model <- function(control_param, boosted=TRUE) {
+  if(boosted) {
+    tree_model <- C5.0(class~., data=dataset, trials=10)
+  }
+  tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
+  plot(tree_model)
+  summary(tree_model)
 }
 
 loadDataset("datasets/glass.csv")
@@ -23,7 +33,7 @@ tree_control <- C5.0Control(CF = 0.0)
 #tree_control <- C5.0Control(minCases = 10)
 #tree_control <- C5.0Control()
 
-plotExampleTree(tree_control)
+tree_model <- fit_tree_model(tree_control)
 
 
 folds <- createFolds(iris$Species, k = 10, list = FALSE)
