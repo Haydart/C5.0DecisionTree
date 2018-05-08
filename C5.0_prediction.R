@@ -2,21 +2,14 @@
 library(C50)
 library(caret)
 
-#folds <- crossv_kfold(iris, k=25)
-#index <- 10
-#folds$test$'1'$idx
-
 loadDataset <- function(filename) {
-  data <<- read.csv(filename)
-  which(names(data))
-  data
-}
-
-loadDataset <- function(filename) {
-  read.csv(file = filename)
+  dataset <<- read.csv(filename)
+  class_col_index <<- which(names(dataset) == "class")
 }
 
 loadDataset("datasets/iris.csv")
+dataset
+plot(dataset)
 
 folds <- createFolds(iris$Species, k = 10, list = FALSE)
 folds
