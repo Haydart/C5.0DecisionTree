@@ -34,3 +34,7 @@ summarizeTree <- function(tree_model) {
   plot(tree_model)
   summary(tree_model)
 }
+
+calculateMeasures <- function(mode) {
+  confusionMatrix(data=predictions[,-class_col_index], reference=dataset$class, mode=mode)
+}
