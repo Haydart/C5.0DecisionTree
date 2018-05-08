@@ -8,17 +8,15 @@ loadDataset <- function(filename) {
   dataset[, "class"] <<- as.factor(dataset[, "class"])
 }
 
-plotDecisionTree <- function(control_param) {
-  tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
-  plot(tree_model)
-  tree_model
+fit_tree_model <- function(control_param) {
+  tree_model <- C5.0(class~., data=dataset, trials=10)
 }
 
-fit_tree_model <- function(control_param, boosted=TRUE) {
-  if(boosted) {
-    tree_model <- C5.0(class~., data=dataset, trials=10)
-  }
+fit_tree_model_boosted <- function(trials_count) {
   tree_model = C5.0.default(dataset[,-class_col_index], dataset[,class_col_index], control = control_param)
+}
+
+summarize_tree <- function(tree_model) {
   plot(tree_model)
   summary(tree_model)
 }
@@ -33,7 +31,27 @@ tree_control <- C5.0Control(CF = 0.0)
 #tree_control <- C5.0Control(minCases = 10)
 #tree_control <- C5.0Control()
 
+splitData <- function(data, folds_count, stratified, shuffled) {
+  if (shuffled) {
+    data = data[sample(nrow(data)),]
+  }
+  if (stratified) {
+    foldIndices = createFolds(data$class, k=folds_count)
+    folds = list()
+    for (i in 1:length(foldIndices)) {
+      temp_array = array(as.numeric(unlist(foldIndices[i])))
+      folds[[i]] = data[temp_array,]
+    }
+    folds
+  } else {
+    folds = split(data, rep(1:folds_number))
+  }
+}
+
+data_folds = splitData(dataset, folds_n=5, stratified=TRUE, shuffled=TRUE)
+
 tree_model <- fit_tree_model(tree_control)
+boosted_tree_model <- fit_tree_model_boosted()
 
 
 folds <- createFolds(iris$Species, k = 10, list = FALSE)
